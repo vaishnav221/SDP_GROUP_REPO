@@ -1,1 +1,5 @@
-# SDP_GROUP_REPO
+# SDP
+
+-> Clone this Repo
+-> npm i
+-> npm run dev
