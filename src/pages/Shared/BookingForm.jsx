@@ -43,25 +43,7 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white relative">
-      <header className="bg-white shadow-md py-4">
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">BashBarn</h1>
-          <nav className="flex items-center">
-            <ul className="flex space-x-6 h-[8vh] items-center">
-              <li>
-                <a href="#" className="flex items-center text-blue-600 hover:text-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
-                  <User className="mr-2" size={24} />
-                  <span className="font-semibold">User</span>
-                </a>
-              </li>
-            </ul>
-            <button onClick={toggleSidebar} className="ml-6 text-blue-600 hover:text-blue-800 transition duration-300 ease-in-out transform hover:scale-110">
-              <Menu size={24} />
-            </button>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white relative"> 
 
       <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
         <div className="p-6">
