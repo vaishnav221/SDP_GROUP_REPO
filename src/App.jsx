@@ -12,6 +12,8 @@ import UserLayout from './layout/UserLayout';
 import AdminLayout from './layout/AdminLayout';
 import BookingCalendar from './pages/Shared/Bookings';
 import BookingForm from './pages/Shared/BookingForm';
+// import Auth from './services/auth';
+// import Api from './services/api';
 
 const App = () => {
   return (
@@ -23,7 +25,6 @@ const App = () => {
           <Route path='/register' element={<Register />} />
           <Route path='/Bookings' element={<BookingCalendar />} />
           <Route path='/BookingForm' element={<BookingForm/>} />
-          
         </Route>
 
         <Route element={<UserLayout />}>

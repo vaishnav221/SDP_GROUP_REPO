@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRef,useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, Lock, User, Menu, X } from 'lucide-react';
+import { authService } from '../../services/auth';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -15,6 +17,45 @@ const Login = () => {
     const [isDashboardOpen, setIsDashboardOpen] = useState(false);
     const [loginType, setLoginType] = useState('user');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        checkRedirect();
+    }, []);
+  
+    const emailRef = useRef(null)
+      const passwordRef = useRef(null)
+      const handleLogin = async (e) => {
+          e.preventDefault();
+          const res = await authService.SignIn(emailRef.current.value, passwordRef.current.value)
+          console.log(res.data);
+          if (res.status === 200 && res.data.role == 'USER') {
+              authService.setToken(res.data.accessToken)
+              navigate('/dashboard');
+              // toast.success("Welcome")
+              setTimeout(() => {
+                  // checkRedirect();
+              }, 3000)
+  
+          }
+          else if (res.status === 200 && res.data.role === 'MANAGER'){
+            navigate('/request-management');
+          }
+      };
+
+  const checkRedirect = async () => {
+    if (authService.getToken() !== null && authService.isLoggedIn()) {
+        const userRole = authService.getUserRole();
+        if (userRole !== null) {
+            if (userRole === "MANAGER") {
+                navigate('/request-management');
+            } else if (userRole === "USER") {
+                navigate('/dashboard');
+            } else {
+                toast.error("Something went wrong");
+            }
+        }
+    }
+};
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,45 +85,8 @@ const Login = () => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
             {/* Navbar */}
-            <header className="bg-white shadow-md py-4">
-                <div className="container mx-auto px-6 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold text-gray-800">Hall Management System</h1>
-                    <nav className="flex items-center">
-                        <ul className="flex space-x-6 h-[8vh] items-center">
-                            <li onClick={handleNavigate}>
-                                <a href="#" className="flex items-center text-blue-600 hover:text-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
-                                    <span className="font-semibold">Home</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="flex items-center text-blue-600 hover:text-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
-                                    <User className="mr-2" size={24} />
-                                    <span className="font-semibold">Profile</span>
-                                </a>
-                            </li>
-                        </ul>
-                        <button onClick={toggleDashboard} className="ml-6 text-blue-600 hover:text-blue-800 transition duration-300 ease-in-out transform hover:scale-110">
-                            <Menu size={24} />
-                        </button>
-                    </nav>
-                </div>
-            </header>
-
             {/* Dashboard Sidebar */}
-            <div className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform ${isDashboardOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
-                <div className="p-4">
-                    <button onClick={toggleDashboard} className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out">
-                        <X size={24} />
-                    </button>
-                    <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
-                    <ul className="space-y-4">
-                        <li className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 cursor-pointer transition duration-300 ease-in-out">
-                            <User /> <span className="font-medium">Profile</span>
-                        </li>
-                        {/* Add more dashboard items as needed */}
-                    </ul>
-                </div>
-            </div>
+            
 
             {/* Login Form */}
             <div className="flex items-center justify-center pt-20">
@@ -124,15 +128,13 @@ const Login = () => {
                                 <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                                 <div className="mt-1 relative rounded-md shadow-sm">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                                    <Input 
-                                        id="email" 
-                                        type="email" 
-                                        placeholder="user@iamneo.ai" 
-                                        className="pl-10 w-full"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
+                                    <input type="email" id="email" 
+                                    ref={emailRef} className="w-full px-3 py-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required/>
+          
                                 </div>
                             </div>
                             <div>
