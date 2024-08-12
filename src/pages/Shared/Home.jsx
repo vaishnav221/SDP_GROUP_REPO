@@ -46,6 +46,7 @@ const Home = () => {
     navigate("/Bookings");
   }
 
+  
   const handleLogout = () => {
     console.log("Logout clicked");
   }

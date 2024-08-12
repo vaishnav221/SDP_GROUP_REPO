@@ -26,6 +26,9 @@ const UserDashboard = () => {
   {
     navigate('/BookingForm');
   }
+  const handleHalls = () => {
+    navigate('/hallcard');
+  }
 
   const handleLogout = () => {
     // Implement logout logic here
@@ -155,7 +158,7 @@ const UserDashboard = () => {
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <Button className="w-full" onClick={handleBookings}>New Booking</Button>
-              <Button className="w-full" variant="outline">View All Bookings</Button>
+              <Button className="w-full" variant="outline" onClick={handleHalls}>View All Bookings</Button>
             </div>
           </CardContent>
         </Card>

@@ -30,7 +30,7 @@ const Login = () => {
           console.log(res.data);
           if (res.status === 200 && res.data.role == 'USER') {
               authService.setToken(res.data.accessToken)
-              navigate('/dashboard');
+              navigate('/hallview');
               // toast.success("Welcome")
               setTimeout(() => {
                   // checkRedirect();
@@ -49,7 +49,7 @@ const Login = () => {
             if (userRole === "MANAGER") {
                 navigate('/request-management');
             } else if (userRole === "USER") {
-                navigate('/dashboard');
+                navigate('/hallview');
             } else {
                 toast.error("Something went wrong");
             }
@@ -66,7 +66,7 @@ const Login = () => {
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         if (email === 'user@gmail.com' && password === '12345') {
-            navigate(loginType === 'admin' ? '/dashboard' : '/BookingForm');
+            navigate(loginType === 'admin' ? '/dashboard' : '/hallview');
         } else {
             setError('Invalid email or password');
         }
