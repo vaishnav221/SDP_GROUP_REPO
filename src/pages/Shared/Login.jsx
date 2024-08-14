@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRef,useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Mail, Lock, User, Menu, X } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { LoginData, axiosInstance } from '@/services/api';  // Ensure axiosInstance is imported
 import { authService } from '../../services/auth';
 
 const Login = () => {
@@ -14,81 +14,86 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isDashboardOpen, setIsDashboardOpen] = useState(false);
     const [loginType, setLoginType] = useState('user');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        checkRedirect();
-    }, []);
-  
-    const emailRef = useRef(null)
-      const passwordRef = useRef(null)
-      const handleLogin = async (e) => {
-          e.preventDefault();
-          const res = await authService.SignIn(emailRef.current.value, passwordRef.current.value)
-          console.log(res.data);
-          if (res.status === 200 && res.data.role == 'USER') {
-              authService.setToken(res.data.accessToken)
-              navigate('/hallview');
-              // toast.success("Welcome")
-              setTimeout(() => {
-                  // checkRedirect();
-              }, 3000)
-  
-          }
-          else if (res.status === 200 && res.data.role === 'MANAGER'){
-            navigate('/request-management');
-          }
-      };
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
 
-  const checkRedirect = async () => {
-    if (authService.getToken() !== null && authService.isLoggedIn()) {
-        const userRole = authService.getUserRole();
-        if (userRole !== null) {
-            if (userRole === "MANAGER") {
-                navigate('/request-management');
-            } else if (userRole === "USER") {
-                navigate('/hallview');
-            } else {
-                toast.error("Something went wrong");
-            }
-        }
-    }
-};
-
-    const handleSubmit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        setError('');
         setIsLoading(true);
+        // navigate('/dashboard');
+        setError('');
 
-        // Simulating an API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+    //     try {
+    //         const res = await authService.SignIn(emailRef.current.value, passwordRef.current.value);
+    //         if (res.status === 200) {
+    //             authService.setToken(res.data.token);
 
-        if (email === 'user@gmail.com' && password === '12345') {
-            navigate(loginType === 'admin' ? '/dashboard' : '/hallview');
-        } else {
+    //             // Fetch the user data
+    //             const userResponse = await axiosInstance.get('/v1/auth/user', {
+    //                 headers: {
+    //                     Authorization: `Bearer ${res.data.token}`,  // Pass the token in the request
+    //                 },
+    //             });
+
+    //             const userData = userResponse.data;
+
+    //             // Validate user data based on your criteria
+    //             if (userData.role === 'USER') {
+    //                 navigate('/hallview');
+    //             } else if (userData.role === 'MANAGER') {
+    //                 navigate('/request-management');
+    //             } else {
+    //                 setError('Invalid role');
+    //             }
+    //         }
+    //     } catch (error) {
+    //         setError('Invalid email or password');
+    //     }
+
+    //     setIsLoading(false);
+    // };
+
+
+    // const handleLogin = async (e) => {
+    //     e.preventDefault();
+    //     setIsLoading(true);
+    //     setError('');
+    
+        try {
+            const res = await authService.SignIn(emailRef.current.value, passwordRef.current.value);
+            if (res.status === 200) {
+                authService.setToken(res.data.token);
+    
+                // Fetch the user data
+                const userResponse = await axiosInstance.get('/v1/auth/user', {
+                    headers: {
+                        Authorization: `Bearer ${res.data.token}`,  // Use the token here
+                    },
+                });
+    
+                const userData = userResponse.data;
+    
+                // Validate user data based on your criteria
+                if (userData.role === 'USER') {
+                    navigate('/hallview');
+                } else if (userData.role === 'MANAGER') {
+                    navigate('/request-management');
+                } else {
+                    setError('Invalid role');
+                }
+            }
+        } catch (error) {
             setError('Invalid email or password');
         }
-
+    
         setIsLoading(false);
     };
-
-    const toggleDashboard = () => {
-        setIsDashboardOpen(!isDashboardOpen);
-    };
-
-    const handleNavigate = () => {
-        navigate("/");  // Navigate to home page
-    };
-
+    
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-            {/* Navbar */}
-            {/* Dashboard Sidebar */}
-            
-
-            {/* Login Form */}
             <div className="flex items-center justify-center pt-20">
                 <Card className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
                     <CardHeader className="bg-[#000235] text-white p-6">
@@ -97,7 +102,7 @@ const Login = () => {
                             Enter your credentials to access your account
                         </CardDescription>
                     </CardHeader>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleLogin}>
                         <CardContent className="p-6 space-y-4">
                             {error && (
                                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -106,38 +111,21 @@ const Login = () => {
                                 </div>
                             )}
                             <div>
-    <Label className="text-gray-700 font-medium ">Login Type</Label>
-    <div className="flex space-x-4 mt-2">
-        <Button
-            type="button"
-            onClick={() => setLoginType('user')}
-            className={`px-4 py-2 rounded w-[10] ${loginType === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-            User
-        </Button>
-        <Button
-            type="button"
-            onClick={() => setLoginType('admin')}
-            className={`px-4 py-2 rounded  ${loginType === 'admin' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-        >
-            Admin
-        </Button>
-    </div>
-</div>
-                            <div>
-                                <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                                <Label className="text-gray-700 font-medium">Email</Label>
                                 <div className="mt-1 relative rounded-md shadow-sm">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                                    <input type="email" id="email" 
-                                    ref={emailRef} className="w-full px-3 py-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Enter your email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required/>
-          
+                                    <Input 
+                                        type="email" 
+                                        id="email" 
+                                        ref={emailRef} 
+                                        className="w-full px-3 py-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Enter your email"
+                                        required
+                                    />
                                 </div>
                             </div>
                             <div>
-                                <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                                <Label className="text-gray-700 font-medium">Password</Label>
                                 <div className="mt-1 relative rounded-md shadow-sm">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                                     <Input 
@@ -145,8 +133,7 @@ const Login = () => {
                                         type={showPassword ? "text" : "password"} 
                                         placeholder="••••••" 
                                         className="pl-10 w-full"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        ref={passwordRef}
                                         required
                                     />
                                     <button
@@ -180,6 +167,6 @@ const Login = () => {
             </div>
         </div>
     );
-}
+};
 
 export default Login;

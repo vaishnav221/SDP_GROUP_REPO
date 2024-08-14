@@ -14,6 +14,8 @@ import BookingCalendar from './pages/Shared/Bookings';
 import BookingForm from './pages/Shared/BookingForm';
 import HallCard from './pages/Admin/Halls';
 import HallView from './pages/Shared/HallView';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // import Auth from './services/auth';
 // import Api from './services/api';
 
@@ -30,7 +32,7 @@ const App = () => {
           <Route path='/hallcard' element={<HallCard/>} />
           <Route path='/hallview' element={<HallView/>} />
         </Route>
-
+        {/* <ToastContainer/> */}
         <Route element={<UserLayout />}>
           <Route path='/dashboard' element={<UserDashboard />} />
         </Route>

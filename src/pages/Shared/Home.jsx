@@ -9,6 +9,8 @@ import audi from "../images/audi.jpeg";
 import outdoor from "../images/outdoor.jpeg";
 import { FaBars, FaTimes, FaCalendarAlt, FaChartBar, FaCog, FaUserPlus, FaSignInAlt, FaMapMarkerAlt, FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +29,22 @@ const Home = () => {
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleCardClick = () => {
+    toast.info('Please login to book this venue', {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
   };
 
   const indianCities = [
@@ -91,7 +109,7 @@ const Home = () => {
         </div>
         <p className="mb-6 text-lg text-center text-gray-700">Find your desired hall below:</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" onClick={handleLogin}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" onClick={handleCardClick}>
           {filteredCards.map((card) => (
             <div key={card.id}>
               <Card title={card.title} content={card.content} imageSrc={card.imageSrc} />
@@ -103,6 +121,7 @@ const Home = () => {
           <p className="text-center text-gray-600 mt-8">No results found. Please try a different search term.</p>
         )}
       </main>
+      <ToastContainer/>
     </div>
   );
 };

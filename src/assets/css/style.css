@@ -73,3 +73,6 @@
 .active{
   color: #16a34a;
 }
+.Toastify__toast-container {
+  z-index: 9999 !important;
+}
